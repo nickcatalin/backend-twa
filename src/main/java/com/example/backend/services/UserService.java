@@ -63,6 +63,7 @@ public class UserService {
         Set<Role> roles = new HashSet<>();
         roles.add(new Role(2L, "USER"));
 
+        user.setRoles(roles);
 
         User savedUser = userRepository.save(user);
 
