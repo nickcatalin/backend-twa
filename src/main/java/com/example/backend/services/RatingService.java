@@ -2,6 +2,7 @@ package com.example.backend.services;
 
 import com.example.backend.dtos.RatingDto;
 import com.example.backend.dtos.UserDto;
+import com.example.backend.dtos.RatingDistributionDto;
 import com.example.backend.entites.Link;
 import com.example.backend.entites.Rating;
 import com.example.backend.entites.User;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.ArrayList;
 
 @RequiredArgsConstructor
 @Service
@@ -80,5 +82,25 @@ public class RatingService {
 
         long sum = ratings.stream().mapToLong(Rating::getRating).sum();
         return sum * 20 / ratings.size();
+    }
+
+    public long getTotalRatings() {
+        return ratingRepository.count();
+    }
+
+    public List<RatingDistributionDto> getRatingDistribution() {
+        List<RatingDistributionDto> distribution = new ArrayList<>();
+        
+        // Create distribution for ratings 1-5
+        for (int i = 1; i <= 5; i++) {
+            long count = ratingRepository.countByRating(i);
+            
+            distribution.add(RatingDistributionDto.builder()
+                    .rating(i)
+                    .count(count)
+                    .build());
+        }
+        
+        return distribution;
     }
 }

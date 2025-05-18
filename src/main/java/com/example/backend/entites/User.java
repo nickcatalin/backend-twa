@@ -6,7 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -39,6 +41,10 @@ public class User {
     @Column(nullable = false)
     @Size(max = 100)
     private String password;
+
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = true, updatable = false)
+    private LocalDateTime createdAt;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private List<Link> links = new ArrayList<>();

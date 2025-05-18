@@ -20,6 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.nio.CharBuffer;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -115,5 +116,42 @@ public class UserService {
                 .collect(Collectors.toSet()));
 
         userRepository.save(user);
+    }
+
+    public long getTotalUsers() {
+        return userRepository.count();
+    }
+
+    public long getNewUsersCount(LocalDateTime sinceDate) {
+        return userRepository.countByCreatedAtAfter(sinceDate);
+    }
+
+    public Map<String, Long> getUserGrowthByDay(LocalDateTime startDate) {
+        Map<String, Long> growthByDay = new HashMap<>();
+        LocalDateTime endDate = LocalDateTime.now();
+        LocalDateTime currentDate = startDate;
+
+        while (!currentDate.isAfter(endDate)) {
+            long count = userRepository.countByCreatedAtBetween(currentDate, currentDate.plusDays(1));
+            growthByDay.put(currentDate.toLocalDate().toString(), count);
+            currentDate = currentDate.plusDays(1);
+        }
+
+        return growthByDay;
+    }
+
+    public Map<String, Long> getRoleDistribution() {
+        Map<String, Long> roleDistribution = new HashMap<>();
+        List<User> users = userRepository.findAll();
+        
+        // For each user, count their roles
+        for (User user : users) {
+            for (Role role : user.getRoles()) {
+                String roleName = role.getName();
+                roleDistribution.put(roleName, roleDistribution.getOrDefault(roleName, 0L) + 1);
+            }
+        }
+        
+        return roleDistribution;
     }
 }
